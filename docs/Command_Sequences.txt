@@ -1,0 +1,78 @@
+================================================================================
+FORGELINE DEVOPS METRICS DASHBOARD - CLI BASIC GIT COMMAND SEQUENCES
+================================================================================
+
+--------------------------------------------------------------------------------
+1. BRANCH CREATION AND SWITCHING
+--------------------------------------------------------------------------------
+# Fetch latest references from upstream
+git fetch origin
+
+# Switch to local main baseline and pull latest state
+git switch main
+git pull origin main
+
+# Create and switch to new isolated feature branch
+git switch -c feature/issue-14-refresh-interval
+
+--------------------------------------------------------------------------------
+2. CI STATE TRANSITION (WORKING COPY -> STAGING -> LOCAL REPO)
+--------------------------------------------------------------------------------
+# Inspect active workspace status
+git status
+
+# Inspect unstaged local diffs against Staging Area
+git diff
+
+# Stage specific Configuration Item (CI)
+git add config/metrics_config.py
+
+# Verify exact line changes prepared for commit
+git diff --staged
+
+# Create snapshot in local repository with descriptive message
+git commit -m "feat(metrics): set refresh interval to 45s (#14)"
+
+--------------------------------------------------------------------------------
+3. BASIC-GIT MERGE CONFLICT RESOLUTION (config/metrics_config.py)
+--------------------------------------------------------------------------------
+# Step 3.1: Fetch latest remote references
+git fetch origin
+
+# Step 3.2: Merge main into feature branch (Triggers conflict)
+git merge origin/main
+
+# Step 3.3: Inspect conflict status
+git status
+# Output: unmerged paths: both modified: config/metrics_config.py
+
+# Step 3.4: Inspect conflict markers in config/metrics_config.py
+# File content during conflict:
+# <<<<<<< HEAD
+# REFRESH_INTERVAL_SECONDS = 60
+# DASHBOARD_NAME = "Metrics Dashboard"
+# MAX_WIDGETS = 12
+# =======
+# REFRESH_INTERVAL_SECONDS = 30
+# DASHBOARD_NAME = "Delivery Metrics"
+# MAX_WIDGETS = 12
+# >>>>>>> origin/main
+
+# Step 3.5: Edit config/metrics_config.py to resolve conflict and remove markers.
+# Final resolved file content of config/metrics_config.py:
+REFRESH_INTERVAL_SECONDS = 45
+DASHBOARD_NAME = "Delivery Metrics"
+MAX_WIDGETS = 12
+
+# Step 3.6: Verify no conflict markers (<<<<<<<, =======, >>>>>>>) remain
+git diff config/metrics_config.py
+
+# Step 3.7: Stage resolved file and verify staged diff
+git add config/metrics_config.py
+git diff --staged
+
+# Step 3.8: Finalize merge commit using standard basic Git
+git commit -m "merge: resolve metrics_config conflict with main (#14)"
+
+# Step 3.9: Push updated feature branch upstream
+git push -u origin feature/issue-14-refresh-interval
